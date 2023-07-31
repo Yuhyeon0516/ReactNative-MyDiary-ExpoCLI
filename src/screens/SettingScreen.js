@@ -11,6 +11,8 @@ import { CustomButton } from "../components/CustomButton";
 import { RemoteImage } from "../components/RemoteImage";
 import { Typography } from "../components/Typography";
 import { useImagePickAndUpload } from "../hooks/useImagePickAndUpload";
+import { Divider } from "../components/Divider";
+import { Icon } from "../components/Icons";
 
 export default function SettingScreen() {
   const [userInfo, setUserInfo] = useRecoilState(stateUserInfo);
@@ -39,6 +41,17 @@ export default function SettingScreen() {
     }
   }, [userInfo, runImagePickAndUpload]);
 
+  const onPressAddPassword = useCallback(() => {
+    navigation.navigate("AddPassword");
+  }, []);
+
+  const onPressResetPassword = useCallback(async () => {
+    const userDB = `/users/${userInfo.uid}`;
+    await database().ref(userDB).update({
+      password: "",
+    });
+  }, []);
+
   return (
     <View style={{ flex: 1 }}>
       <Header>
@@ -48,7 +61,7 @@ export default function SettingScreen() {
           <Header.Title title={"Setting"} />
         </Header.Group>
       </Header>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, paddingTop: 32 }}>
         <View style={{ alignItems: "center", justifyContent: "center" }}>
           <CustomButton onPress={onPressProfile}>
             <RemoteImage url={userInfo.profileImage} width={100} height={100} style={{ borderRadius: 50 }} />
@@ -56,6 +69,20 @@ export default function SettingScreen() {
           <Spacer space={20} />
           <Typography fontSize={20}>{userInfo.name}</Typography>
         </View>
+        <Spacer space={20} />
+        <Divider />
+        <Spacer space={20} />
+        <CustomButton onPress={onPressAddPassword}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 12, paddingHorizontal: 24 }}>
+            <Typography fontSize={16}>비밀번호 추가</Typography>
+            <Icon iconName={"chevron-forward-outline"} size={16} />
+          </View>
+        </CustomButton>
+        <CustomButton onPress={onPressResetPassword}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 12, paddingHorizontal: 24 }}>
+            <Typography fontSize={16}>비밀번호 초기화</Typography>
+          </View>
+        </CustomButton>
       </View>
     </View>
   );
