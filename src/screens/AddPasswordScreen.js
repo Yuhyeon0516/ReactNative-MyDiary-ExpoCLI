@@ -14,6 +14,7 @@ export default function AddPasswordScreen() {
   const [firstInput, setFirstInput] = useState("");
   const [secondInput, setSecondInput] = useState("");
   const [isInputFirst, setIsInputFirst] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
   const userInfo = useRecoilValue(stateUserInfo);
 
   const onPressBack = useCallback(() => {
@@ -38,6 +39,9 @@ export default function AddPasswordScreen() {
 
     if (firstInput === secondInput) {
       onCompleteInputPassword();
+    } else {
+      setErrorMessage("비밀번호가 다릅니다.");
+      setSecondInput("");
     }
   }, [firstInput, secondInput]);
 
@@ -64,6 +68,7 @@ export default function AddPasswordScreen() {
               setSecondInput(text);
             }
           }}
+          errorMessage={errorMessage}
         />
       </View>
     </View>

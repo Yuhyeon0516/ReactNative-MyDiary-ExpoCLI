@@ -12,6 +12,7 @@ export default function SplashView({ onFinishLoad }) {
   const [loading, setLoading] = useState(false);
   const [showLoginButton, setShowLoginButton] = useState(false);
   const [userInfo, setUserInfo] = useRecoilState(stateUserInfo);
+  const [passwordError, setPasswordError] = useState(null);
   const [inputPassword, setInputPassword] = useState("");
   const runGetDiaryList = useGetDiaryList();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
@@ -101,9 +102,13 @@ export default function SplashView({ onFinishLoad }) {
                   lastLoginAt: now,
                 });
                 onFinishLoad();
+              } else {
+                setPasswordError("비밀번호가 다릅니다.");
+                setInputPassword("");
               }
             }
           }}
+          errorMessage={passwordError}
         />
       )}
       {loading && <ActivityIndicator />}
