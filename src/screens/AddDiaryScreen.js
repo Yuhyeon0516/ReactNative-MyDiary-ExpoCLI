@@ -58,8 +58,6 @@ export default function AddDiaryScreen() {
   const onPressSave = useCallback(() => {
     if (!canSave) return;
 
-    console.log(content);
-
     runCreateDiary(selectedPhotoUrl, selectedDate, title, content);
     navigation.goBack();
   }, [canSave]);
