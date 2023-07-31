@@ -8,3 +8,8 @@ If you move to setting screen, you can see your profile & add password button.<b
 When you click add password button, you set password in diary.<br/>
 
 # Result
+
+![Result](https://github.com/Yuhyeon0516/ReactNative-MyDiary/assets/120432007/5df5509e-3652-4ea1-b1b3-7940d5628482)
+
+
+
