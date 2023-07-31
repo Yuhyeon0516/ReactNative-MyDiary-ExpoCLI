@@ -8,6 +8,8 @@ import { RemoteImage } from "../components/RemoteImage";
 import { Spacer } from "../components/Spacer";
 import { Typography } from "../components/Typography";
 import DateTimePicker from "react-native-modal-datetime-picker";
+import SingleLineInput from "../components/SingleLineInput";
+import MultiLineInput from "../components/MultiLineInput";
 
 export default function AddDiaryScreen() {
   const { width } = useWindowDimensions();
@@ -20,6 +22,16 @@ export default function AddDiaryScreen() {
 
   const [selectedPhotoUrl, setSelectedPhotoUrl] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  const canSave = useMemo(() => {
+    if (!selectedDate) return false;
+    if (!title) return false;
+    if (!content) return false;
+    return true;
+  }, [selectedDate, title, content]);
+
   const runImagePickAndUpload = useImagePickAndUpload();
 
   const [visibleDatePicker, setVisibleDatePicker] = useState(false);
@@ -39,6 +51,8 @@ export default function AddDiaryScreen() {
   const onPressCalendar = useCallback(() => {
     setVisibleDatePicker(true);
   }, []);
+
+  const onPressSave = useCallback(() => {}, []);
 
   return (
     <View style={{ flex: 1 }}>
@@ -65,6 +79,26 @@ export default function AddDiaryScreen() {
             </Typography>
           </View>
         </CustomButton>
+        <Spacer space={40} />
+        <View style={{ paddingHorizontal: 24 }}>
+          <SingleLineInput value={title} onChangeText={setTitle} placeholder={"제목을 입력해주세요."} />
+        </View>
+        <Spacer space={20} />
+        <View style={{ paddingHorizontal: 24 }}>
+          <MultiLineInput value={content} onChangeText={setContent} placeholder={"있었던 일을 알려주세요."} />
+        </View>
+        <Spacer space={40} />
+        <View style={{ paddingHorizontal: 24 }}>
+          <CustomButton onPress={onPressSave}>
+            <View
+              style={{ paddingVertical: 16, alignItems: "center", justifyContent: "center", backgroundColor: canSave ? "black" : "lightgray", borderRadius: 4 }}
+            >
+              <Typography color={canSave ? "white" : "gray"} fontSize={20}>
+                등록하기
+              </Typography>
+            </View>
+          </CustomButton>
+        </View>
       </ScrollView>
       <DateTimePicker
         isVisible={visibleDatePicker}
