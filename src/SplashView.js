@@ -1,8 +1,8 @@
-import { Platform, View } from "react-native";
+import { View } from "react-native";
 import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import { useCallback, useEffect, useState } from "react";
 import auth from "@react-native-firebase/auth";
-import database, { firebase } from "@react-native-firebase/database";
+import database from "@react-native-firebase/database";
 import { useRecoilState } from "recoil";
 import { stateUserInfo } from "./states/stateUserInfo";
 
@@ -24,8 +24,8 @@ export default function SplashView({ onFinishLoad }) {
 
     if (!userResult) {
       await database().ref(userDBRefKey).set({
-        name: result.additionalUserInfo.profile.name,
-        profileImage: result.additionalUserInfo.profile.picture,
+        name: result.user.displayName,
+        profileImage: result.user.photoURL,
         uid: result.user.uid,
         password: "",
         createdAt: now,
