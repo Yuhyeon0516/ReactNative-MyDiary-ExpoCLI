@@ -50,6 +50,9 @@ export default function SettingScreen() {
     await database().ref(userDB).update({
       password: "",
     });
+    setUserInfo({
+      password: "",
+    });
   }, []);
 
   return (
@@ -74,15 +77,17 @@ export default function SettingScreen() {
         <Spacer space={20} />
         <CustomButton onPress={onPressAddPassword}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 12, paddingHorizontal: 24 }}>
-            <Typography fontSize={16}>비밀번호 추가</Typography>
+            <Typography fontSize={16}>{userInfo.password ? "비밀번호 수정" : "비밀번호 추가"}</Typography>
             <Icon iconName={"chevron-forward-outline"} size={16} />
           </View>
         </CustomButton>
-        <CustomButton onPress={onPressResetPassword}>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 12, paddingHorizontal: 24 }}>
-            <Typography fontSize={16}>비밀번호 초기화</Typography>
-          </View>
-        </CustomButton>
+        {userInfo.password && (
+          <CustomButton onPress={onPressResetPassword}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 12, paddingHorizontal: 24 }}>
+              <Typography fontSize={16}>비밀번호 초기화</Typography>
+            </View>
+          </CustomButton>
+        )}
       </View>
     </View>
   );

@@ -5,7 +5,7 @@ import database from "@react-native-firebase/database";
 import { Header } from "../components/Header/Header";
 import { Spacer } from "../components/Spacer";
 import PasswordInputBox from "../components/PasswordInputBox";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { stateUserInfo } from "../states/stateUserInfo";
 
 export default function AddPasswordScreen() {
@@ -15,7 +15,7 @@ export default function AddPasswordScreen() {
   const [secondInput, setSecondInput] = useState("");
   const [isInputFirst, setIsInputFirst] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  const userInfo = useRecoilValue(stateUserInfo);
+  const [userInfo, setUserInfo] = useRecoilState(stateUserInfo);
 
   const onPressBack = useCallback(() => {
     navigation.goBack();
@@ -28,6 +28,12 @@ export default function AddPasswordScreen() {
 
     await database().ref(userDB).update({
       password: firstInput,
+    });
+    setUserInfo((prev) => {
+      return {
+        ...prev,
+        password: firstInput,
+      };
     });
     navigation.goBack();
   }, [firstInput, secondInput, userInfo]);
@@ -51,7 +57,7 @@ export default function AddPasswordScreen() {
         <Header.Group>
           <Header.Icon iconName={"arrow-back"} onPress={onPressBack} />
           <Spacer space={12} horizontal />
-          <Header.Title title={"비밀번호 추가"} />
+          <Header.Title title={userInfo.password ? "비밀번호 수정" : "비밀번호 추가"} />
         </Header.Group>
       </Header>
       <View style={{ flex: 1, paddingTop: 32 }}>

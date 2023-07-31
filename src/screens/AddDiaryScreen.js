@@ -93,7 +93,13 @@ export default function AddDiaryScreen() {
         </View>
         <Spacer space={20} />
         <View style={{ paddingHorizontal: 24 }}>
-          <MultiLineInput value={content} onChangeText={setContent} placeholder={"있었던 일을 알려주세요."} />
+          <MultiLineInput
+            value={content}
+            onChangeText={(text) => {
+              setContent(text);
+            }}
+            placeholder={"있었던 일을 알려주세요."}
+          />
         </View>
         <Spacer space={40} />
         <View style={{ paddingHorizontal: 24 }}>
