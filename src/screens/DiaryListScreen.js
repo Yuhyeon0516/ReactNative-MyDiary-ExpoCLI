@@ -8,6 +8,8 @@ import { Icon } from "../components/Icons";
 import { RemoteImage } from "../components/RemoteImage";
 import { Spacer } from "../components/Spacer";
 import { Typography } from "../components/Typography";
+import { useRecoilValue } from "recoil";
+import { stateDiaryList } from "../states/stateDiaryList";
 
 export default function DiaryListScreen() {
   const navigation = useNavigation();
@@ -22,32 +24,7 @@ export default function DiaryListScreen() {
 
   const { width } = useWindowDimensions();
 
-  const [data, setData] = useState([
-    {
-      id: 0,
-      title: "TITLE01",
-      content: "CONTENT01",
-      createdAt: "2023-06-26",
-      updatedAt: "2023-06-26",
-      imageUrl: "https://docs.expo.dev/static/images/tutorial/background-image.png",
-    },
-    {
-      id: 1,
-      title: "TITLE02",
-      content: "CONTENT02",
-      createdAt: "2023-06-27",
-      updatedAt: "2023-06-27",
-      imageUrl: "https://docs.expo.dev/static/images/tutorial/background-image.png",
-    },
-    {
-      id: 2,
-      title: "TITLE03",
-      content: "CONTENT03",
-      createdAt: "2023-06-28",
-      updatedAt: "2023-06-28",
-      imageUrl: "",
-    },
-  ]);
+  const data = useRecoilValue(stateDiaryList);
 
   return (
     <View style={{ flex: 1 }}>
@@ -68,13 +45,13 @@ export default function DiaryListScreen() {
             return (
               <CustomButton
                 onPress={() => {
-                  navigation.navigate, ("DiaryDetail", { item });
+                  navigation.navigate("DiaryDetail", { item });
                 }}
               >
                 <View style={{ paddingVertical: 12 }}>
-                  {item.imageUrl && (
+                  {item.photoUrl && (
                     <>
-                      <RemoteImage url={item.imageUrl} width={width - 48} height={(width - 48) * 0.5} style={{ borderRadius: 8 }} />
+                      <RemoteImage url={item.photoUrl} width={width - 48} height={(width - 48) * 0.5} style={{ borderRadius: 8 }} />
                       <Spacer space={4} />
                     </>
                   )}
