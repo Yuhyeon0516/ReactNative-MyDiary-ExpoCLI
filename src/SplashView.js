@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import { useCallback, useEffect, useState } from "react";
 import auth from "@react-native-firebase/auth";
@@ -9,12 +9,14 @@ import { useGetDiaryList } from "./hooks/useGetDiaryList";
 import PasswordInputBox from "./components/PasswordInputBox";
 
 export default function SplashView({ onFinishLoad }) {
+  const [loading, setLoading] = useState(false);
   const [showLoginButton, setShowLoginButton] = useState(false);
   const [userInfo, setUserInfo] = useRecoilState(stateUserInfo);
   const [inputPassword, setInputPassword] = useState("");
   const runGetDiaryList = useGetDiaryList();
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const signinUserIdentify = useCallback(async (idToken) => {
+    setLoading(true);
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
     const result = await auth().signInWithCredential(googleCredential);
@@ -36,7 +38,6 @@ export default function SplashView({ onFinishLoad }) {
         createdAt: now,
         lastLoginAt: now,
       });
-    } else {
     }
 
     const userInfo = await database()
@@ -53,6 +54,7 @@ export default function SplashView({ onFinishLoad }) {
 
     if (userInfo.password) {
       setShowPasswordInput(true);
+      setLoading(false);
       return;
     }
 
@@ -74,6 +76,7 @@ export default function SplashView({ onFinishLoad }) {
       const { idToken } = await GoogleSignin.signInSilently();
       signinUserIdentify(idToken);
     } catch (error) {
+      setLoading(false);
       setShowLoginButton(true);
     }
   }, []);
@@ -103,6 +106,7 @@ export default function SplashView({ onFinishLoad }) {
           }}
         />
       )}
+      {loading && <ActivityIndicator />}
     </View>
   );
 }
