@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
 import { useCallback, useEffect, useState } from "react";
 import auth from "@react-native-firebase/auth";
@@ -6,12 +6,18 @@ import database from "@react-native-firebase/database";
 import { useRecoilState } from "recoil";
 import { stateUserInfo } from "./states/stateUserInfo";
 import { useGetDiaryList } from "./hooks/useGetDiaryList";
+import PasswordInputBox from "./components/PasswordInputBox";
 
 export default function SplashView({ onFinishLoad }) {
+  const [loading, setLoading] = useState(false);
   const [showLoginButton, setShowLoginButton] = useState(false);
-  const [_, setUserInfo] = useRecoilState(stateUserInfo);
+  const [userInfo, setUserInfo] = useRecoilState(stateUserInfo);
+  const [passwordError, setPasswordError] = useState(null);
+  const [inputPassword, setInputPassword] = useState("");
   const runGetDiaryList = useGetDiaryList();
+  const [showPasswordInput, setShowPasswordInput] = useState(false);
   const signinUserIdentify = useCallback(async (idToken) => {
+    setLoading(true);
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
     const result = await auth().signInWithCredential(googleCredential);
@@ -33,10 +39,6 @@ export default function SplashView({ onFinishLoad }) {
         createdAt: now,
         lastLoginAt: now,
       });
-    } else {
-      await database().ref(userDBRefKey).update({
-        lastLoginAt: now,
-      });
     }
 
     const userInfo = await database()
@@ -45,12 +47,21 @@ export default function SplashView({ onFinishLoad }) {
       .then((snapshot) => snapshot.val());
 
     setUserInfo(userInfo);
-
     try {
       await runGetDiaryList(userInfo);
     } catch (error) {
       console.log(error);
     }
+
+    if (userInfo.password) {
+      setShowPasswordInput(true);
+      setLoading(false);
+      return;
+    }
+
+    await database().ref(userDBRefKey).update({
+      lastLoginAt: now,
+    });
 
     onFinishLoad();
   }, []);
@@ -66,6 +77,7 @@ export default function SplashView({ onFinishLoad }) {
       const { idToken } = await GoogleSignin.signInSilently();
       signinUserIdentify(idToken);
     } catch (error) {
+      setLoading(false);
       setShowLoginButton(true);
     }
   }, []);
@@ -75,6 +87,31 @@ export default function SplashView({ onFinishLoad }) {
   }, []);
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>{showLoginButton && <GoogleSigninButton onPress={onPressGoogleLogin} />}</View>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      {showLoginButton && <GoogleSigninButton onPress={onPressGoogleLogin} />}
+      {showPasswordInput && (
+        <PasswordInputBox
+          value={inputPassword}
+          onChangeText={async (text) => {
+            setInputPassword(text);
+            if (text.length === 4) {
+              if (userInfo.password === text) {
+                const now = new Date().toISOString();
+                const userDB = `/users/${userInfo.uid}`;
+                await database().ref(userDB).update({
+                  lastLoginAt: now,
+                });
+                onFinishLoad();
+              } else {
+                setPasswordError("비밀번호가 다릅니다.");
+                setInputPassword("");
+              }
+            }
+          }}
+          errorMessage={passwordError}
+        />
+      )}
+      {loading && <ActivityIndicator />}
+    </View>
   );
 }
